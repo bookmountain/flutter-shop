@@ -4,11 +4,6 @@ import 'package:provider/provider.dart';
 import '../models/product.dart';
 
 class ProductItem extends StatelessWidget {
-  // final String id;
-  // final String title;
-  // final String imaUrl;
-  // ProductItem(this.id, this.title, this.imaUrl);
-
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context);
@@ -22,7 +17,7 @@ class ProductItem extends StatelessWidget {
         child: GridTile(
           child: Image.network(
             product.imageUrl,
-            fit: BoxFit.contain,
+            fit: BoxFit.cover,
           ),
           footer: GridTileBar(
             backgroundColor: Colors.black38,

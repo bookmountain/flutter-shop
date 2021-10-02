@@ -37,8 +37,17 @@ class Products with ChangeNotifier {
     ),
   ];
 
+  // var _showFavoriteOnly = false;
+
   List<Product> get items {
+    // if (_showFavoriteOnly) {
+    //   return _items.where((prodItem) => prodItem.isFavorite).toList();
+    // }
     return [..._items];
+  }
+
+  List<Product> get favoriteItems {
+    return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
   Product findById(String id) {
@@ -49,4 +58,14 @@ class Products with ChangeNotifier {
     // _items.add(value);
     notifyListeners();
   }
+
+  // void showFavoritesOnly() {
+  //   _showFavoriteOnly = true;
+  //   notifyListeners();
+  // }
+  //
+  // void showAll() {
+  //   _showFavoriteOnly = false;
+  //   notifyListeners();
+  // }
 }
