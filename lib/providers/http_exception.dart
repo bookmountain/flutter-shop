@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HttpException implements Exception {
-  final String message;
+  final dynamic message;
 
   HttpException(this.message);
 
