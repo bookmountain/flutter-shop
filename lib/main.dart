@@ -7,6 +7,7 @@ import 'package:state_management/screens/auth_screen.dart';
 import 'package:state_management/screens/cart_screen.dart';
 import 'package:state_management/screens/edit_product_screen.dart';
 import 'package:state_management/screens/orders_screen.dart';
+import 'package:state_management/screens/splash_screen.dart';
 import 'package:state_management/screens/user_product_screen.dart';
 import './screens/produts_overview_screen.dart';
 import './screens/product_detail_screen.dart';
@@ -23,14 +24,30 @@ class MyApp extends StatelessWidget {
             value: Auth(),
           ),
           ChangeNotifierProxyProvider<Auth, Products>(
-            update: (ctx, auth, previousProducts) => Products(auth.token!,
-                previousProducts == null ? [] : previousProducts.items),
-            create: (ctx) => Products('', []),
+            update: (ctx, auth, previousProducts) {
+              if (auth.token != null && auth.userId != null) {
+                return Products(auth.token!, auth.userId!,
+                    previousProducts == null ? [] : previousProducts.items);
+              } else {
+                return Products('', '', []);
+              }
+            },
+            create: (ctx) => Products('', '', []),
           ),
           ChangeNotifierProvider(
             create: (ctx) => Cart(),
           ),
-          ChangeNotifierProvider(create: (ctx) => Orders())
+          ChangeNotifierProxyProvider<Auth, Orders>(
+            update: (ctx, auth, previousOrder) {
+              if (auth.token != null && auth.userId != null) {
+                return Orders(auth.token!, auth.userId!,
+                    previousOrder == null ? [] : previousOrder.orders);
+              } else {
+                return Orders('', '', []);
+              }
+            },
+            create: (ctx) => Orders('', '', []),
+          )
         ],
         child: Consumer<Auth>(
           builder: (ctx, auth, child) {
@@ -40,7 +57,18 @@ class MyApp extends StatelessWidget {
                   primarySwatch: Colors.purple,
                   accentColor: Colors.deepOrange,
                   fontFamily: 'Lato'),
-              home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+              home: auth.isAuth
+                  ? ProductsOverviewScreen()
+                  : FutureBuilder(
+                      future: auth.tryAutoLogin(),
+                      builder: (
+                        ctx,
+                        authResultSnapshot,
+                      ) =>
+                          authResultSnapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? SplashScreen()
+                              : AuthScreen()),
               routes: {
                 ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
                 CartScreen.routeName: (ctx) => CartScreen(),
